@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.0] - YYYY-MM-DD
+
+### Added
+- Defined pellets (`2`) and power pellets (`3`) in the `map` array (`game.js`).
+- `drawPellets` function to render pellets (white) and power pellets (orange, flashing) (`game.js`).
+- Pellet eating logic in `PacMan.update` (`pacman.js`):
+    - Removes pellets/power pellets from map on collision.
+    - Increases score (10 for pellet, 50 for power pellet).
+- `PacMan.score` property and `getScore()` method (`pacman.js`).
+- `drawScore` function to display the current score (`game.js`).
+- Power Pellet effect (`pacman.js`):
+    - `powerPelletActive` state and timer.
+    - `activatePowerPellet()` and `isPowerPelletActive()` methods.
+    - Timer countdown in `update`.
+- Pac-Man color change in `PacMan.draw` (`pacman.js`):
+    - Changes to lime green when power pellet is active.
+    - Flashes between yellow and lime green before timer expires.
+- Logic to explicitly clear the starting tile and award points at game start (`game.js`).
+
+### Changed
+- Updated `PacMan.update` to handle pellet/power pellet eating.
+- Updated `PacMan.draw` to handle power pellet color changes and flashing.
+- Modified starting logic in `game.js` to clear starting pellet correctly.
+- Modified `drawPellets` to handle power pellet rendering and color.
+
 ## [0.2.0] - YYYY-MM-DD
 
 ### Added

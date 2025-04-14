@@ -9,11 +9,34 @@ class PacMan {
         this.radius = tileSize / 2;
         this.currentFrame = 0; // For animation later
         this.frameCount = 7; // Example frame count for animation
+        this.score = 0; // Add score property to PacMan
+        this.powerPelletActive = false;
+        this.powerPelletTimer = 0;
+        this.powerPelletDuration = 5000; // Duration in milliseconds (10 seconds)
     }
 
     // Placeholder draw method - assumes a canvas context 'ctx' is passed
     draw(ctx) {
-        ctx.fillStyle = 'yellow';
+        let fillColor = 'yellow'; // Default color
+        const powerFlashThreshold = 3000; // Flash for the last 3 seconds
+
+        if (this.powerPelletActive) {
+             // Check if timer is low for flashing effect
+             if (this.powerPelletTimer <= powerFlashThreshold && this.powerPelletTimer > 0) {
+                 // Flash rapidly between yellow and green (example)
+                 // Change color every 200ms (adjust timing as needed)
+                 if (Math.floor(Date.now() / 200) % 2 === 0) {
+                     fillColor = 'yellow';
+                 } else {
+                     fillColor = 'lime'; // Power pellet active color
+                 }
+             } else {
+                 // Power pellet active, but not flashing yet
+                 fillColor = 'lime'; // Use power pellet active color
+             }
+        }
+
+        ctx.fillStyle = fillColor; // Set the determined fill color
         ctx.beginPath();
         // Basic animation: open/close mouth based on direction (placeholder)
         let angle1 = 0.25 * Math.PI;
@@ -63,6 +86,15 @@ class PacMan {
 
     // Update PacMan's position based on current direction and speed
     update(map) {
+        // --- Power Pellet Timer --- 
+        if (this.powerPelletActive) {
+             this.powerPelletTimer -= 1000 / 60; // Assuming 60 FPS roughly
+             if (this.powerPelletTimer <= 0) {
+                 this.powerPelletActive = false;
+                 // Later: Tell ghosts to stop being frightened
+             }
+        }
+
         // Try to change to the requested direction if it's valid now
         if (this.requestedDirection && !this.#isCollisionInDirection(this.requestedDirection, map)) {
              this.direction = this.requestedDirection;
@@ -102,6 +134,27 @@ class PacMan {
                  this.x = Math.round(this.x / this.tileSize) * this.tileSize;
              }
              // Don't clear this.direction here, allow trying requestedDirection next frame
+        }
+
+        // --- Pellet Eating Logic --- 
+        const currentGridX = Math.floor((this.x + this.radius) / this.tileSize);
+        const currentGridY = Math.floor((this.y + this.radius) / this.tileSize);
+
+        if (currentGridX >= 0 && currentGridX < map[0].length &&
+            currentGridY >= 0 && currentGridY < map.length) {
+
+            const tileValue = map[currentGridY][currentGridX];
+
+            if (tileValue === 2) { // 2 = Pellet
+                map[currentGridY][currentGridX] = 0; 
+                this.score += 10; 
+            } else if (tileValue === 3) { // 3 = Power Pellet
+                 map[currentGridY][currentGridX] = 0; 
+                 this.score += 50; 
+                 this.activatePowerPellet();
+                 // Later: Tell ghosts to become frightened
+            }
+             // Later: Add logic for eating fruit
         }
 
         // Handle map boundaries (wrapping or stopping)
@@ -163,4 +216,21 @@ class PacMan {
 
         return false; // No collision detected
     }
+
+    // Method to get current score
+    getScore() {
+        return this.score;
+    }
+
+    // Method to activate the power pellet effect
+    activatePowerPellet() {
+         this.powerPelletActive = true;
+         this.powerPelletTimer = this.powerPelletDuration;
+         // console.log("Power Pellet ACTIVE!"); // Optional log
+    }
+
+     // Method to check if power pellet is active
+     isPowerPelletActive() {
+         return this.powerPelletActive;
+     }
 }

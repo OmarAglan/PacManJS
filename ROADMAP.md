@@ -8,10 +8,10 @@ This document outlines the development plan for PacManJS.
 - [x] Implement basic Pac-Man movement controlled by arrow keys
 - [x] Create the game map/maze
 - [x] Implement collision detection with walls
-- [ ] Add pellets (dots) to the map
-- [ ] Implement pellet eating logic
-- [ ] Add power pellets
-- [ ] Implement score tracking
+- [x] Add pellets (dots) to the map
+- [x] Implement pellet eating logic
+- [x] Add power pellets
+- [x] Implement score tracking
 
 ## Phase 2: Ghost AI & Interaction
 
