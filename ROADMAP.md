@@ -4,10 +4,10 @@ This document outlines the development plan for PacManJS.
 
 ## Phase 1: Core Gameplay Mechanics
 
-- [ ] Implement Pac-Man entity
-- [ ] Implement basic Pac-Man movement controlled by arrow keys
-- [ ] Create the game map/maze
-- [ ] Implement collision detection with walls
+- [x] Implement Pac-Man entity
+- [x] Implement basic Pac-Man movement controlled by arrow keys
+- [x] Create the game map/maze
+- [x] Implement collision detection with walls
 - [ ] Add pellets (dots) to the map
 - [ ] Implement pellet eating logic
 - [ ] Add power pellets

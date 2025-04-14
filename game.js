@@ -10,6 +10,12 @@ let wallSpaceWidth = oneBlockSize / 1.2;
 let wallOffset = (oneBlockSize - wallSpaceWidth) /2;
 let wallInnerColor = 'black'
 
+// Calculate canvas size based on map
+const mapRows = map.length;
+const mapCols = map[0].length;
+canvas.width = mapCols * oneBlockSize;
+canvas.height = mapRows * oneBlockSize;
+
 // Pac-Man instance
 let pacman;
 
@@ -81,7 +87,7 @@ let gameLoop = () =>{
 
 let update = () =>{
     //todo: Update Method
-    pacman.update();
+    pacman.update(map);
 }
 
 let draw = () =>{
@@ -146,7 +152,7 @@ window.addEventListener('keydown', (event) => {
             break;
     }
     if (requestedDirection) {
-         pacman.changeDirection(requestedDirection);
+         pacman.changeDirection(requestedDirection, map);
     }
 });
 
