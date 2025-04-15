@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Walls.png</title>
+    <script>
+        // Function to download the image as walls.png
+        function downloadImage() {
+            // Create a canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Create a 512x512 canvas (4x4 grid of 128px tiles)
+            canvas.width = 512;
+            canvas.height = 512;
+            
+            // Fill with black background
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw the walls in neon blue
+            const wallColor = '#00FFFF';
+            const wallInnerColor = '#0055AA';
+            
+            // Set up tile grid (4x4)
+            const tileSize = 128;
+            
+            // Function to draw a wall piece
+            function drawWallPiece(x, y, connectors) {
+                // Calculate position
+                const posX = x * tileSize;
+                const posY = y * tileSize;
+                
+                // Draw outer wall shape (glow)
+                ctx.shadowColor = '#00FFFF';
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = wallColor;
+                
+                // Draw basic shape based on connectors
+                const wallWidth = tileSize * 0.8;
+                const wallOffset = (tileSize - wallWidth) / 2;
+                
+                // Begin path for the wall piece
+                ctx.beginPath();
+                
+                if (connectors === 'corner-tl') {
+                    // Top-left corner
+                    ctx.moveTo(posX + tileSize, posY + wallOffset);
+                    ctx.lineTo(posX + wallOffset, posY + wallOffset);
+                    ctx.lineTo(posX + wallOffset, posY + tileSize);
+                    ctx.lineTo(posX + tileSize, posY + tileSize);
+                } else if (connectors === 'corner-tr') {
+                    // Top-right corner
+                    ctx.moveTo(posX, posY + wallOffset);
+                    ctx.lineTo(posX + tileSize - wallOffset, posY + wallOffset);
+                    ctx.lineTo(posX + tileSize - wallOffset, posY + tileSize);
+                    ctx.lineTo(posX, posY + tileSize);
+                } else if (connectors === 'corner-bl') {
+                    // Bottom-left corner
+                    ctx.moveTo(posX + tileSize, posY);
+                    ctx.lineTo(posX + wallOffset, posY);
+                    ctx.lineTo(posX + wallOffset, posY + tileSize - wallOffset);
+                    ctx.lineTo(posX + tileSize, posY + tileSize - wallOffset);
+                } else if (connectors === 'corner-br') {
+                    // Bottom-right corner
+                    ctx.moveTo(posX, posY);
+                    ctx.lineTo(posX + tileSize - wallOffset, posY);
+                    ctx.lineTo(posX + tileSize - wallOffset, posY + tileSize - wallOffset);
+                    ctx.lineTo(posX, posY + tileSize - wallOffset);
+                } else if (connectors === 'horizontal') {
+                    // Horizontal line
+                    ctx.rect(posX, posY + wallOffset, tileSize, wallWidth);
+                } else if (connectors === 'vertical') {
+                    // Vertical line
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize);
+                } else if (connectors === 'cross') {
+                    // Cross (plus)
+                    ctx.rect(posX, posY + wallOffset, tileSize, wallWidth);
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize);
+                } else if (connectors === 't-up') {
+                    // T-junction pointing up
+                    ctx.rect(posX, posY + wallOffset, tileSize, wallWidth);
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize - wallOffset);
+                } else if (connectors === 't-right') {
+                    // T-junction pointing right
+                    ctx.rect(posX, posY + wallOffset, tileSize - wallOffset, wallWidth);
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize);
+                } else if (connectors === 't-down') {
+                    // T-junction pointing down
+                    ctx.rect(posX, posY + wallOffset, tileSize, wallWidth);
+                    ctx.rect(posX + wallOffset, posY + wallOffset, wallWidth, tileSize - wallOffset);
+                } else if (connectors === 't-left') {
+                    // T-junction pointing left
+                    ctx.rect(posX + wallOffset, posY + wallOffset, tileSize - wallOffset, wallWidth);
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize);
+                } else if (connectors === 'end-up') {
+                    // End cap pointing up
+                    ctx.rect(posX + wallOffset, posY, wallWidth, tileSize - wallOffset);
+                } else if (connectors === 'end-right') {
+                    // End cap pointing right
+                    ctx.rect(posX, posY + wallOffset, tileSize - wallOffset, wallWidth);
+                } else if (connectors === 'end-down') {
+                    // End cap pointing down
+                    ctx.rect(posX + wallOffset, posY + wallOffset, wallWidth, tileSize - wallOffset);
+                } else if (connectors === 'end-left') {
+                    // End cap pointing left
+                    ctx.rect(posX + wallOffset, posY + wallOffset, tileSize - wallOffset, wallWidth);
+                } else if (connectors === 'block') {
+                    // Solid block
+                    ctx.rect(posX + wallOffset, posY + wallOffset, wallWidth, wallWidth);
+                }
+                
+                ctx.fill();
+                ctx.closePath();
+                
+                // Reset shadow for next drawing
+                ctx.shadowBlur = 0;
+                ctx.shadowColor = 'transparent';
+            }
+            
+            // Draw all wall pieces according to the 4x4 grid shown in your screenshot
+            // Row 1
+            drawWallPiece(0, 0, 'block');         // Isolated
+            drawWallPiece(1, 0, 'corner-br');     // Corner Bottom Right & UL
+            drawWallPiece(2, 0, 'vertical');      // Vertical & End Left
+            drawWallPiece(3, 0, 'end-right');     // End Right
+            
+            // Row 2
+            drawWallPiece(0, 1, 'end-up');        // End Up
+            drawWallPiece(1, 1, 't-up');          // T-NoDown
+            drawWallPiece(2, 1, 't-right');       // T-NoLeft
+            drawWallPiece(3, 1, 't-left');        // T-NoRight
+            
+            // Row 3
+            drawWallPiece(0, 2, 'corner-tl');     // Corner Top Left
+            drawWallPiece(1, 2, 'cross');         // Cross
+            drawWallPiece(2, 2, 'horizontal');    // Horizontal
+            drawWallPiece(3, 2, 'horizontal');    // Horizontal
+            
+            // Row 4
+            drawWallPiece(0, 3, 'corner-tr');     // Corner Top Right
+            drawWallPiece(1, 3, 'end-down');      // End Down
+            drawWallPiece(2, 3, 't-down');        // T-NoUp
+            drawWallPiece(3, 3, 't-down');        // T-NoUp variant
+            
+            // Convert the canvas to a data URL
+            const dataURL = canvas.toDataURL('image/png');
+            
+            // Create a download link and click it
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'walls.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show the image on the page
+            document.getElementById('preview').src = dataURL;
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #111;
+            color: #00FFFF;
+        }
+        button {
+            background-color: #00FFFF;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #00DDDD;
+        }
+        #preview {
+            margin-top: 20px;
+            max-width: 100%;
+            border: 2px solid #00FFFF;
+        }
+        h1 {
+            text-shadow: 0 0 10px #00FFFF;
+        }
+        .instructions {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PacMan Walls Generator</h1>
+    
+    <div class="instructions">
+        <p>This tool generates a walls.png file for your PacMan game.</p>
+        <p>Click the button below to generate and download the walls.png file.</p>
+        <p>After downloading, place the file in your assets folder.</p>
+    </div>
+    
+    <button onclick="downloadImage()">Generate and Download walls.png</button>
+    
+    <div>
+        <h2>Preview:</h2>
+        <img id="preview" src="" alt="Walls preview will appear here">
+    </div>
+</body>
+</html> 

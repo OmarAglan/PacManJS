@@ -10,6 +10,53 @@ let wallSpaceWidth = oneBlockSize / 1.2;
 let wallOffset = (oneBlockSize - wallSpaceWidth) /2;
 let wallInnerColor = 'black'
 
+// Background Particles System
+const particles = [];
+const particleCount = 50; // Number of particles
+const particleColors = ['#004444', '#002222', '#003333']; // Dark cyan variations
+
+// Initialize particles
+function initParticles() {
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2 + 1,
+            color: particleColors[Math.floor(Math.random() * particleColors.length)],
+            speedX: Math.random() * 0.5 - 0.25,
+            speedY: Math.random() * 0.5 - 0.25,
+            alpha: Math.random() * 0.5 + 0.2
+        });
+    }
+}
+
+// Update particles position
+function updateParticles() {
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].x += particles[i].speedX;
+        particles[i].y += particles[i].speedY;
+        
+        // Wrap particles around the screen
+        if (particles[i].x < 0) particles[i].x = canvas.width;
+        if (particles[i].x > canvas.width) particles[i].x = 0;
+        if (particles[i].y < 0) particles[i].y = canvas.height;
+        if (particles[i].y > canvas.height) particles[i].y = 0;
+    }
+}
+
+// Draw background particles
+function drawParticles() {
+    for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        canvasContext.globalAlpha = p.alpha;
+        canvasContext.beginPath();
+        canvasContext.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        canvasContext.fillStyle = p.color;
+        canvasContext.fill();
+    }
+    canvasContext.globalAlpha = 1.0; // Reset global alpha
+}
+
 // Define Map Tile Constants
 const TILE_WALL = 1;
 const TILE_PELLET = 2;
@@ -36,24 +83,24 @@ wallSpritesheet.onerror = () => {
 };
 
 // Lookup Table (LUT) for mapping bitmask value (0-15) to sprite grid coordinates (col, row)
-// This needs to match the layout of YOUR specific walls.png
+// This needs to match the layout of the walls.png that will be generated
 const wallTileLookup = [
-    {x: 0, y: 0}, // Mask 0 (0000) - Isolated (Corrected based on visual analysis)
+    {x: 0, y: 0}, // Mask 0 (0000) - Isolated block
     {x: 0, y: 1}, // Mask 1 (0001 - U) - End Cap Up
     {x: 3, y: 0}, // Mask 2 (0010 - R) - End Cap Right
-    {x: 3, y: 1}, // Mask 3 (0011 - UR) - Corner Top Right
+    {x: 0, y: 3}, // Mask 3 (0011 - UR) - Corner Top Right
     {x: 1, y: 3}, // Mask 4 (0100 - D) - End Cap Down
-    {x: 0, y: 3}, // Mask 5 (0101 - UD) - Vertical Straight
-    {x: 1, y: 1}, // Mask 6 (0110 - RD) - Corner Bottom Right
-    {x: 1, y: 2}, // Mask 7 (0111 - URD) - T-NoLeft (Points Left)
+    {x: 2, y: 0}, // Mask 5 (0101 - UD) - Vertical Straight
+    {x: 1, y: 0}, // Mask 6 (0110 - RD) - Corner Bottom Right
+    {x: 2, y: 1}, // Mask 7 (0111 - URD) - T-junction pointing Right
     {x: 2, y: 0}, // Mask 8 (1000 - L) - End Cap Left
-    {x: 2, y: 1}, // Mask 9 (1001 - UL) - Corner Bottom Left
-    {x: 1, y: 0}, // Mask 10 (1010 - RL) - Horizontal Straight
-    {x: 2, y: 3}, // Mask 11 (1011 - URL) - T-NoDown (Points Down)
-    {x: 2, y: 2}, // Mask 12 (1100 - DL) - Corner Top Left
-    {x: 0, y: 2}, // Mask 13 (1101 - UDL) - T-NoRight (Points Right)
-    {x: 3, y: 3}, // Mask 14 (1110 - RDL) - T-NoUp (Points Left)
-    {x: 3, y: 2}, // Mask 15 (1111 - URDL) - Cross/Full
+    {x: 1, y: 0}, // Mask 9 (1001 - UL) - Corner Bottom Left
+    {x: 2, y: 2}, // Mask 10 (1010 - RL) - Horizontal Straight
+    {x: 1, y: 1}, // Mask 11 (1011 - URL) - T-junction pointing Up
+    {x: 0, y: 2}, // Mask 12 (1100 - DL) - Corner Top Left
+    {x: 3, y: 1}, // Mask 13 (1101 - UDL) - T-junction pointing Left
+    {x: 2, y: 3}, // Mask 14 (1110 - RDL) - T-junction pointing Down
+    {x: 1, y: 2}, // Mask 15 (1111 - URDL) - Cross/Full
 ];
 
 // Classic Pac-Man Map Layout (Example - Can be adjusted)
@@ -136,6 +183,9 @@ if (pacmanStartX === undefined) {
 
 pacman = new PacMan(pacmanStartX, pacmanStartY, oneBlockSize, oneBlockSize / 5);
 
+// Initialize particles
+initParticles();
+
 // Gamepad state
 let gamepadConnected = false;
 let previousGamepadButtons = [];
@@ -163,6 +213,9 @@ let gameLoop = () =>{
 let update = () =>{
     //todo: Update Method
     pacman.update(map);
+    
+    // Update background particles
+    updateParticles();
 
     // Placeholder for losing a life (e.g., collision with ghost)
     // if (pacmanHitGhost()) { 
@@ -178,6 +231,9 @@ let update = () =>{
 let draw = () =>{
     // Draw black background
     createRect('black', 0, 0, canvas.width, canvas.height);
+    
+    // Draw background particles
+    drawParticles();
     
     if (gameState === STATE_READY) {
         drawReadyScreen();
@@ -209,6 +265,16 @@ let drawWalls = () => {
         }
         return; // Exit if spritesheet isn't ready
     }
+    
+    // Calculate pulsing effect for wall glow
+    const time = Date.now();
+    const pulseMin = 8;  // Minimum glow
+    const pulseMax = 15; // Maximum glow
+    const pulseSpeed = 2000; // Speed of pulse in ms (lower = faster)
+    
+    // Sin wave oscillation between min and max
+    const pulseAmount = pulseMin + (Math.sin(time / pulseSpeed) + 1) / 2 * (pulseMax - pulseMin);
+    
     // When using spritesheet, the color comes from the image, 
     // but we keep wallColor defined for fallback or potential other uses.
 
@@ -238,6 +304,10 @@ let drawWalls = () => {
                 const dx = j * oneBlockSize;
                 const dy = i * oneBlockSize;
 
+                // Apply pulsing glow effect
+                canvasContext.shadowColor = "#00FFFF";
+                canvasContext.shadowBlur = pulseAmount;
+                
                 // Draw the appropriate sprite tile using the looked-up coordinates
                 canvasContext.drawImage(
                     wallSpritesheet,
@@ -250,6 +320,10 @@ let drawWalls = () => {
                     oneBlockSize,
                     oneBlockSize
                 );
+                
+                // Reset shadow for other elements
+                canvasContext.shadowBlur = 0;
+                canvasContext.shadowColor = "transparent";
             } 
             // TODO: Add drawing for Ghost House Walls / Door using sprites if needed
             // else if (map[i][j] === TILE_GHOST_HOUSE) { ... }

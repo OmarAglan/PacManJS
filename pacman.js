@@ -161,7 +161,12 @@ class PacMan {
 
             if (tileValue === TILE_PELLET) { // Check for PELLET tile
                 map[currentGridY][currentGridX] = TILE_EMPTY; 
-                this.score += 10; 
+                this.score += 10;
+                // Get canvas object from document to create flash effect
+                const canvas = document.getElementById('canvas');
+                if (canvas) {
+                    this.createPelletFlash(currentGridX, currentGridY, canvas);
+                }
             } else if (tileValue === TILE_POWER_PELLET) { // Check for POWER_PELLET tile
                  map[currentGridY][currentGridX] = TILE_EMPTY; 
                  this.score += 50; 
@@ -238,7 +243,58 @@ class PacMan {
     activatePowerPellet() {
          this.powerPelletActive = true;
          this.powerPelletTimer = this.powerPelletDuration;
+         // Create flash effect when eating power pellet
+         this.createPowerPelletFlash();
          // console.log("Power Pellet ACTIVE!"); // Optional log
+    }
+    
+    // Method to create flash effect when eating power pellet
+    createPowerPelletFlash() {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(255, 0, 255, 0.3)'; // Magenta flash
+        overlay.style.zIndex = '1000';
+        overlay.style.pointerEvents = 'none'; // Don't capture clicks
+        overlay.style.transition = 'opacity 0.5s';
+        
+        document.body.appendChild(overlay);
+        
+        // Fade out and remove
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(overlay);
+            }, 500);
+        }, 100);
+    }
+    
+    // Helper method to create pellet eat flash (smaller than power pellet)
+    createPelletFlash(gridX, gridY, canvas) {
+        // Get canvas context
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a quick flash at the pellet location
+        const x = gridX * this.tileSize + this.tileSize / 2;
+        const y = gridY * this.tileSize + this.tileSize / 2;
+        
+        ctx.save();
+        
+        // Flash animation
+        const radius = this.tileSize / 3;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 255, 0, 0.6)'; // Semi-transparent green
+        ctx.shadowColor = '#00FF00';
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        
+        ctx.restore();
+        
+        // The flash will be drawn for one frame then disappear naturally
     }
 
      // Method to check if power pellet is active
