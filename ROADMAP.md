@@ -24,9 +24,9 @@ This document outlines the development plan for PacManJS.
 
 ## Phase 3: Game Flow & UI
 
-- [ ] Implement game states (Ready, Playing, Pac-Man Dying, Game Over, Win)
-- [ ] Add lives system
-- [ ] Display score and lives on screen
+- [x] Implement game states (Ready, Playing, Game Over)
+- [x] Add lives system (basic implementation with display)
+- [x] Display score and lives on screen
 - [ ] Implement level progression
 - [ ] Add fruit bonuses
 - [ ] Create a start screen
@@ -34,11 +34,13 @@ This document outlines the development plan for PacManJS.
 
 ## Phase 4: Polish & Enhancements
 
-- [ ] Add sound effects (eating pellets, eating ghosts, death, intro)
-- [ ] Add background music
-- [ ] Improve graphics and animations (sprites, smooth movement)
+- [x] Add sound effects (eating pellets, eating ghosts, death, intro)
+- [x] Add background music
+- [x] Improve graphics and animations (sprites, smooth movement)
 - [ ] Refine Ghost AI for more authentic behavior
 - [ ] Optimize performance
+- [x] Added multi-platform controls (Keyboard, Touch, Gamepad)
+- [x] Centered canvas & basic responsiveness
 
 ## Future Ideas (Beyond MVP)
 

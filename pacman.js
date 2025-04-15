@@ -3,7 +3,7 @@ class PacMan {
         this.x = x;
         this.y = y;
         this.tileSize = tileSize;
-        this.speed = speed;
+        this.speed = 4; // Changed to a fixed integer speed for smoother movement
         this.requestedDirection = null;
         this.direction = null; // Can be 'up', 'down', 'left', 'right'
         this.radius = tileSize / 2;
@@ -12,29 +12,39 @@ class PacMan {
         this.score = 0; // Add score property to PacMan
         this.powerPelletActive = false;
         this.powerPelletTimer = 0;
-        this.powerPelletDuration = 5000; // Duration in milliseconds (10 seconds)
+        this.powerPelletDuration = 5000; // Duration in milliseconds (5 seconds)
     }
 
     // Placeholder draw method - assumes a canvas context 'ctx' is passed
     draw(ctx) {
-        let fillColor = 'yellow'; // Default color
+        let fillColor = '#FFFF00'; // Default color - Bright Yellow
+        let glowColor = '#FFFF88'; // Default glow
         const powerFlashThreshold = 3000; // Flash for the last 3 seconds
 
         if (this.powerPelletActive) {
+            const powerFillColor = "#FF00FF"; // Magenta when powered up
+            const powerGlowColor = "#FF88FF";
+
              // Check if timer is low for flashing effect
              if (this.powerPelletTimer <= powerFlashThreshold && this.powerPelletTimer > 0) {
-                 // Flash rapidly between yellow and green (example)
-                 // Change color every 200ms (adjust timing as needed)
+                 // Flash rapidly between default yellow and powered magenta
                  if (Math.floor(Date.now() / 200) % 2 === 0) {
-                     fillColor = 'yellow';
+                     fillColor = '#FFFF00'; // Yellow
+                     glowColor = '#FFFF88';
                  } else {
-                     fillColor = 'lime'; // Power pellet active color
+                     fillColor = powerFillColor; // Magenta
+                     glowColor = powerGlowColor;
                  }
              } else {
                  // Power pellet active, but not flashing yet
-                 fillColor = 'lime'; // Use power pellet active color
+                 fillColor = powerFillColor; // Magenta
+                 glowColor = powerGlowColor;
              }
         }
+
+        // Set glow
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 10; // Consistent glow size
 
         ctx.fillStyle = fillColor; // Set the determined fill color
         ctx.beginPath();
@@ -65,6 +75,10 @@ class PacMan {
         ctx.lineTo(this.x + this.radius, this.y + this.radius); // Fill center for pacman shape
         ctx.fill();
         ctx.closePath();
+
+        // Reset glow for subsequent drawing
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
 
         // Eyes removed for simplicity with mouth animation for now
     }
@@ -145,11 +159,11 @@ class PacMan {
 
             const tileValue = map[currentGridY][currentGridX];
 
-            if (tileValue === 2) { // 2 = Pellet
-                map[currentGridY][currentGridX] = 0; 
+            if (tileValue === TILE_PELLET) { // Check for PELLET tile
+                map[currentGridY][currentGridX] = TILE_EMPTY; 
                 this.score += 10; 
-            } else if (tileValue === 3) { // 3 = Power Pellet
-                 map[currentGridY][currentGridX] = 0; 
+            } else if (tileValue === TILE_POWER_PELLET) { // Check for POWER_PELLET tile
+                 map[currentGridY][currentGridX] = TILE_EMPTY; 
                  this.score += 50; 
                  this.activatePowerPellet();
                  // Later: Tell ghosts to become frightened
@@ -203,13 +217,11 @@ class PacMan {
 
             // Check if the grid indices are within the map bounds
             if (gridX < 0 || gridX >= map[0].length || gridY < 0 || gridY >= map.length) {
-                 // Optional: Treat going out of bounds as collision, depending on desired behavior
-                 // For wrapping tunnels, specific logic is needed here or in update()
-                 continue; // Skip check if out of bounds (handled by wrapping/boundary logic)
+                 continue; 
             }
 
-            // Check if the map tile at this corner is a wall (value 1)
-            if (map[gridY][gridX] === 1) {
+            // Check if the map tile at this corner is a wall
+            if (map[gridY][gridX] === TILE_WALL) { // Use WALL constant
                 return true; // Collision detected
             }
         }
@@ -233,4 +245,19 @@ class PacMan {
      isPowerPelletActive() {
          return this.powerPelletActive;
      }
+
+    // --- Reset Methods for Game State ---
+    resetPosition(startX, startY) {
+        this.x = startX;
+        this.y = startY;
+        this.direction = null; // Stop movement
+        this.requestedDirection = null;
+    }
+
+    resetScore() {
+        this.score = 0;
+        // Also reset power pellet status on full game reset
+        this.powerPelletActive = false;
+        this.powerPelletTimer = 0;
+    }
 }

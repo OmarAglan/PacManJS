@@ -4,16 +4,51 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PacMan JS</title>
+    <title>Neon PacMan - SciFi Remix</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars if canvas slightly overflows */
+            display: flex;
+            flex-direction: column; /* Stack canvas and controls vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            background-color: #111; /* Dark background for contrast */
+        }
+        canvas {
+            display: block; /* Prevent extra space below canvas */
+            image-rendering: pixelated; /* Keep pixel art sharp when scaled */
+            image-rendering: crisp-edges;
+            /* Basic responsiveness: prevent canvas from exceeding window size */
+            max-width: 100%;
+            max-height: 85vh; /* Slightly reduce max height to leave space for controls */
+            /* Add a small margin below */
+            margin-bottom: 10px;
+            /* Maintain aspect ratio - calculated dynamically in JS */
+            /* object-fit: contain; */ /* Alternative, but JS calculation is better */
+        }
+        #controls-info {
+            font-family: 'Courier New', Courier, monospace;
+            color: #00FFFF; /* Neon Cyan */
+            font-size: 16px;
+            text-align: center;
+            padding: 5px;
+            text-shadow: 0 0 5px #00FFFF; /* Subtle glow */
+        }
+    </style>
 </head>
-<body style="margin: 0 ; background-color: black">
- <canvas id="canvas" width="500" height="500">
+<body>
+    <!-- Control Guidelines -->
+    <div id="controls-info">
+        Controls: Arrow Keys / WASD / Swipe / Gamepad D-Pad/Stick
+    </div>
 
- </canvas>
- <div style="display: block">
-    <img id="animation" src="assets/animations.gif" alt="">
-    <img id="ghosts" src="assets/ghost.png" alt="">
- </div>
+    <canvas id="canvas"></canvas>
+    <div style="display: block">
+        <img id="animation" src="assets/pacman.png" alt="" hidden>
+        <img id="ghosts" src="assets/ghost.png" alt="" hidden>
+    </div>
 
     <script src="pacman.js"></script>
     <script src="game.js"></script>

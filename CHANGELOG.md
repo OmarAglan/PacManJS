@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.4.0] - YYYY-MM-DD
+
+### Added
+- Neon/Sci-Fi visual style:
+    - Updated color palette (cyan, magenta, lime green, bright yellow).
+    - Added glow effects to Pac-Man, pellets, and score text using canvas shadows.
+- Wall rendering using spritesheet (`assets/walls.png`) and `wallTileLookup`.
+- Multi-platform controls:
+    - Touch swipe detection on canvas.
+    - Gamepad API integration (D-Pad/Stick movement, button start/restart).
+- Game States (`STATE_READY`, `STATE_PLAYING`, `STATE_GAMEOVER`):
+    - `gameState` variable to track current state.
+    - `gameLoop`, `update`, `draw` functions now respect game state.
+    - `drawReadyScreen`, `drawGameOverScreen`, `drawLives` functions.
+    - `startGame`, `loseLife`, `resetGame` state management functions.
+    - `resetPosition`, `resetScore` methods added to `PacMan` class.
+- HTML Updates (`index.html`):
+    - Updated page title.
+    - Added control guidelines display area.
+    - CSS for canvas centering and basic responsiveness.
+    - CSS for neon control guidelines text.
+- Immediate Pac-Man movement on game start.
+
+### Changed
+- Adjusted Pac-Man speed to fixed integer value for smoother movement.
+- Refactored `drawWalls` to use spritesheet and lookup table.
+- Modified input handlers (Keyboard, Touch, Gamepad) to handle game states (start/restart vs movement).
+- Updated `draw` function to call state-specific drawing functions.
+- Updated `resetGame` to set initial Pac-Man direction.
+
 ## [0.3.0] - YYYY-MM-DD
 
 ### Added
