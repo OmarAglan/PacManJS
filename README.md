@@ -27,4 +27,22 @@ Open `index.html` in your web browser.
 
 ## Running the Game
 
-Open `index.html` in your web browser. 
+Open `index.html` in your web browser.
+
+## Wall Generation Tool
+
+The project includes a helper tool, `download_walls.html`, to generate the `assets/walls.png` spritesheet required by the game.
+
+### Running the Tool
+
+Open `download_walls.html` in your web browser.
+
+### Customization
+
+The tool allows customization of the generated walls:
+- **Background Color:** Change the background color of the spritesheet.
+- **Wall/Glow Color:** Set the color used for the wall lines and their glow effect.
+- **Glow Intensity:** Adjust the strength/spread of the glow effect using a slider.
+- **Wall Thickness:** Control the thickness of the wall lines (as a percentage of tile size) using a slider.
+
+After adjusting the options, click the "Generate and Download walls.png" button. The generated image will be previewed on the page and automatically downloaded. Place the downloaded `walls.png` file into the `assets/` directory, replacing the existing one if necessary. 
