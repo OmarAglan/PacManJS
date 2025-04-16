@@ -29,13 +29,13 @@ This document outlines the development plan for PacManJS.
 - [x] Display score and lives on screen
 - [ ] Implement level progression
 - [ ] Add fruit bonuses
-- [ ] Create a start screen
-- [ ] Create a game over screen
+- [x] Create a start screen
+- [x] Create a game over screen
 
 ## Phase 4: Polish & Enhancements
 
-- [x] Add sound effects (eating pellets, eating ghosts, death, intro)
-- [x] Add background music
+- [ ] Add sound effects (eating pellets, eating ghosts, death, intro)
+- [ ] Add background music
 - [x] Improve graphics and animations (sprites, smooth movement)
 - [ ] Refine Ghost AI for more authentic behavior
 - [ ] Optimize performance
@@ -46,7 +46,8 @@ This document outlines the development plan for PacManJS.
 
 - [ ] High score table (local storage)
 - [ ] Different maze layouts per level
-- [ ] Mobile/touch controls
+- [x] Mobile/touch controls
 - [ ] Difficulty settings
 - [ ] Two-player mode?
-- [ ] Online leaderboards? 
+- [ ] Online leaderboards?
+- [x] Customizable Wall Generation Tool 
