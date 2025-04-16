@@ -6,7 +6,7 @@ A simple Pac-Man game implemented in JavaScript.
 
 Open `index.html` in your web browser.
 
-## Features (v0.4.0)
+## Features (v0.5.0)
 
 - Neon Sci-Fi visual style with glowing elements.
 - Wall rendering using spritesheets with neighbor-aware tiling.
