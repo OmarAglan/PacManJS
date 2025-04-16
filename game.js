@@ -70,7 +70,7 @@ const TILE_PACMAN_START = 6; // Optional: Designate Pac-Man start tile
 let wallSpritesheet = new Image();
 let wallSpritesheetLoaded = false;
 const spriteSize = 128; // Updated for 512x512 spritesheet (512 / 4)
-wallSpritesheet.src = 'assets/walls.png'; // <<< IMPORTANT: Make sure this path is correct!
+wallSpritesheet.src = 'assets/Walls.png'; // <<< IMPORTANT: Make sure this path is correct!
 
 wallSpritesheet.onload = () => {
     wallSpritesheetLoaded = true;
@@ -78,7 +78,7 @@ wallSpritesheet.onload = () => {
     // Optional: Trigger the first draw or game start here if needed
 };
 wallSpritesheet.onerror = () => {
-    console.error("Error loading wall spritesheet at assets/walls.png");
+    console.error("Error loading wall spritesheet at assets/Walls.png");
     // Handle error, maybe draw basic walls as fallback?
 };
 
