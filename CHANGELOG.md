@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.5.0] - 2024-07-26
+
+### Added
+- Wall Generation Tool (`download_walls.html`):
+    - Added UI controls to customize background color, wall/glow color, glow intensity, and wall thickness.
+    - Updated drawing logic to use customized values.
+    - Implemented live preview update on generation.
+    - Updated corner drawing logic to handle variable thickness.
+
+### Changed
+- Updated `README.md` to document the wall generation tool and its customization options.
+
 ## [0.4.0] - YYYY-MM-DD
 
 ### Added
