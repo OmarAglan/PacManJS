@@ -13,6 +13,7 @@ class PacMan {
         this.powerPelletActive = false;
         this.powerPelletTimer = 0;
         this.powerPelletDuration = 5000; // Duration in milliseconds (5 seconds)
+        this.powerPelletJustActivated = false; // Flag to signal power pellet was just eaten
     }
 
     // Placeholder draw method - assumes a canvas context 'ctx' is passed
@@ -243,6 +244,7 @@ class PacMan {
     activatePowerPellet() {
          this.powerPelletActive = true;
          this.powerPelletTimer = this.powerPelletDuration;
+         this.powerPelletJustActivated = true; // Set flag to notify game.js
          // Create flash effect when eating power pellet
          this.createPowerPelletFlash();
          // console.log("Power Pellet ACTIVE!"); // Optional log
@@ -315,5 +317,11 @@ class PacMan {
         // Also reset power pellet status on full game reset
         this.powerPelletActive = false;
         this.powerPelletTimer = 0;
+        this.powerPelletJustActivated = false;
+    }
+
+    // Method to add score
+    addScore(points) {
+        this.score += points;
     }
 }

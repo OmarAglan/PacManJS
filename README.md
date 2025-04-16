@@ -6,7 +6,7 @@ A simple Pac-Man game implemented in JavaScript.
 
 Open `index.html` in your web browser.
 
-## Features (v0.5.0)
+## Features (v0.7.0)
 
 - Neon Sci-Fi visual style with glowing elements.
 - Wall rendering using spritesheets with neighbor-aware tiling.
@@ -24,10 +24,25 @@ Open `index.html` in your web browser.
 - Start/Restart game logic via input.
 - Score and Lives display.
 - Centered canvas with basic responsiveness.
+- Advanced Ghost AI with authentic behavior:
+  - **A* Pathfinding**: Ghosts use A* search for optimal pathfinding in Chase, Scatter, and Eaten modes (performance optimized with path caching).
+  - **Scatter Mode**: Ghosts target their assigned corners of the map.
+  - **Chase Mode**: Each ghost has a unique targeting strategy (Blinky, Pinky, Inky, Clyde).
+  - **Frightened Mode**: Activated when Pac-Man eats a Power Pellet, causing ghosts to move randomly and be vulnerable.
+  - Ghost house behavior with timed exits.
+  - Direction reversal when changing modes.
+  - Proper ghost respawn when eaten.
+  - Refined collision detection using a consistent walkability check.
 
 ## Running the Game
 
 Open `index.html` in your web browser.
+
+## Controls
+
+- **Arrow Keys / WASD**: Move Pac-Man
+- **F2 / D**: Toggle debug mode (shows ghost target tiles, paths, grid)
+- **Enter**: Start/restart game
 
 ## Wall Generation Tool
 

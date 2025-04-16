@@ -4,6 +4,64 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.7.0] - 2024-07-27
+
+### Added
+- **A* Pathfinding for Ghosts:**
+  - Implemented A* algorithm (`#findPathToTarget`) for optimal ghost navigation in Chase, Scatter, and Eaten modes.
+  - Path caching system (`cachedPath`, `cachedTarget`, `pathUpdateInterval`) added to optimize performance.
+  - Debug mode now visualizes the calculated A* path for each ghost.
+- Centralized tile walkability check (`#isTileWalkable`) for consistency between pathfinding and collision.
+
+### Changed
+- **Ghost Movement Logic:**
+  - Replaced simple distance-based direction selection with A* path following for non-frightened ghosts.
+  - Ghosts now temporarily stop if A* fails to find a path, prompting recalculation.
+- **Collision Detection (`#isCollision`):**
+  - Simplified logic to directly use `#isTileWalkable` for the ghost's hitbox corners.
+  - Ensures closer alignment between pixel-level collision checks and grid-based A* walkability.
+- Removed old fallback pathfinding code from the `update` method.
+- Updated `README.md` and `ROADMAP.md` to reflect A* implementation.
+
+## [0.6.0] - 2024-07-27
+
+### Added
+- Advanced Ghost AI implementation:
+  - Implemented classic ghost behavior modes:
+    - Scatter mode: Ghosts target their assigned corners of the map
+    - Chase mode: Each ghost has a unique targeting strategy
+    - Frightened mode: Activated by Power Pellets
+  - Unique targeting algorithms for each ghost:
+    - Blinky (Red): Directly targets Pac-Man's position
+    - Pinky (Pink): Targets 4 tiles ahead of Pac-Man (with the original game's "up" bug)
+    - Inky (Cyan): Uses Blinky's position and vector math to calculate an ambush position
+    - Clyde (Orange): Targets Pac-Man when far (>8 tiles), flees to his scatter corner when close
+  - Ghost house behavior:
+    - Ghosts exit the house at staggered intervals
+    - Eaten ghosts return to the house and become active again
+  - Mode timing system:
+    - Ghosts switch between scatter and chase automatically
+    - Ghosts reverse direction when changing modes
+  - Debug mode (toggle with F2 / D) to visualize ghost target tiles and paths.
+- Ghost-Pacman collision detection:
+  - Pacman loses a life when touched by a non-frightened ghost
+  - Frightened ghosts can be eaten for increasing score values (200, 400, 800, 1600)
+- Win condition when all pellets are eaten
+- Floating text display for scores (`showFloatingText`, `drawFloatingTexts`).
+
+### Changed
+- Updated ghost rendering to support mode-specific appearances:
+  - Normal mode (colored ghosts with directional sprites)
+  - Frightened mode (blue sprites, flashing white near the end)
+  - Eaten mode (eyes only)
+- Updated `update()` function to process power pellet activation and ghost frightened state
+- Improved ghost movement to be AI-driven and target-seeking (initially distance-based).
+- Enhanced reset logic after life loss to properly reset ghost and Pacman positions
+- Updated README with ghost AI details and control information
+- Refined Ghost pathfinding to prevent getting stuck.
+- Improved Ghost collision detection to prevent corner snagging.
+- Enhanced Ghost House entry/exit logic.
+
 ## [0.5.0] - 2024-07-26
 
 ### Added

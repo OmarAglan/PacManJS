@@ -72,6 +72,11 @@ let wallSpritesheetLoaded = false;
 const spriteSize = 128; // Updated for 512x512 spritesheet (512 / 4)
 wallSpritesheet.src = 'assets/Walls.png'; // <<< IMPORTANT: Make sure this path is correct!
 
+let ghostSpritesheet = new Image();
+let ghostSpritesheetLoaded = false;
+const ghostSpriteSize = 16; // Size of one ghost sprite frame
+ghostSpritesheet.src = 'assets/ghost.png';
+
 wallSpritesheet.onload = () => {
     wallSpritesheetLoaded = true;
     console.log("Wall spritesheet loaded.");
@@ -80,6 +85,14 @@ wallSpritesheet.onload = () => {
 wallSpritesheet.onerror = () => {
     console.error("Error loading wall spritesheet at assets/Walls.png");
     // Handle error, maybe draw basic walls as fallback?
+};
+
+ghostSpritesheet.onload = () => {
+    ghostSpritesheetLoaded = true;
+    console.log("Ghost spritesheet loaded.");
+};
+ghostSpritesheet.onerror = () => {
+    console.error("Error loading ghost spritesheet at assets/ghost.png");
 };
 
 // Lookup Table (LUT) for mapping bitmask value (0-15) to sprite grid coordinates (col, row)
@@ -138,6 +151,8 @@ canvas.height = mapRows * oneBlockSize;
 
 // Pac-Man instance
 let pacman;
+// Ghost instances
+let ghosts = [];
 
 // Game variables
 let score = 0;
@@ -183,8 +198,34 @@ if (pacmanStartX === undefined) {
 
 pacman = new PacMan(pacmanStartX, pacmanStartY, oneBlockSize, oneBlockSize / 5);
 
+// Initialize Ghosts
+function initializeGhosts() {
+    ghosts = []; // Clear existing ghosts if any
+    // TODO: Determine correct starting positions based on map/ghost house
+    const ghostSpeed = oneBlockSize / 5; // Use a common speed for now
+    const startY = 8 * oneBlockSize;     // Common starting Y (example)
+
+    // Example starting X positions near center (adjust based on map layout)
+    const positions = {
+        blinky: { x: 10 * oneBlockSize, y: startY, type: 'blinky' },
+        pinky:  { x: 9 * oneBlockSize,  y: startY, type: 'pinky' },
+        inky:   { x: 11 * oneBlockSize, y: startY, type: 'inky' },
+        clyde:  { x: 12 * oneBlockSize, y: startY, type: 'clyde' }
+    };
+
+    ghosts.push(new Ghost(positions.blinky.x, positions.blinky.y, oneBlockSize, ghostSpeed, positions.blinky.type));
+    ghosts.push(new Ghost(positions.pinky.x, positions.pinky.y, oneBlockSize, ghostSpeed, positions.pinky.type));
+    ghosts.push(new Ghost(positions.inky.x, positions.inky.y, oneBlockSize, ghostSpeed, positions.inky.type));
+    ghosts.push(new Ghost(positions.clyde.x, positions.clyde.y, oneBlockSize, ghostSpeed, positions.clyde.type));
+
+    // Optional: Give them slightly different initial directions?
+    // ghosts[1].direction = 'up'; // Example for Pinky
+}
+
 // Initialize particles
 initParticles();
+// Initialize Ghosts
+initializeGhosts();
 
 // Gamepad state
 let gamepadConnected = false;
@@ -196,6 +237,150 @@ const STATE_READY = 0;
 const STATE_PLAYING = 1;
 const STATE_GAMEOVER = 2;
 let gameState = STATE_READY; // Start in Ready state
+
+// Make ghosts accessible globally for AI interaction
+window.ghosts = ghosts;
+
+// Create global callbacks for ghost/pacman collisions
+window.ghostEaten = function(ghost) {
+    // When a ghost is eaten by pacman in frightened mode
+    const scoreValues = [200, 400, 800, 1600]; // Double score for each ghost eaten
+    const eatenCount = ghosts.filter(g => g.isEaten).length - 1; // -1 because current ghost isn't counted yet
+    const scoreValue = scoreValues[Math.min(eatenCount, scoreValues.length - 1)];
+    
+    // Add score to pacman
+    if (pacman) {
+        pacman.addScore(scoreValue);
+    }
+    
+    // Show floating score text (would be implemented later)
+    console.log(`Ghost eaten! +${scoreValue} points`);
+};
+
+window.pacmanEaten = function() {
+    // When pacman is eaten by a ghost
+    loseLife();
+};
+
+// Enhance debug mode with keyboard toggle and visual indicator
+window.debugMode = false;
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'F2' || event.key === 'd') {
+        window.debugMode = !window.debugMode;
+        console.log(`Debug mode ${window.debugMode ? 'enabled' : 'disabled'}`);
+        
+        // Show visual indicator when debug mode is enabled
+        showDebugIndicator(window.debugMode);
+    }
+});
+
+// Function to show debug mode indicator
+function showDebugIndicator(isEnabled) {
+    // Remove any existing indicator
+    const existingIndicator = document.getElementById('debug-indicator');
+    if (existingIndicator) {
+        document.body.removeChild(existingIndicator);
+    }
+    
+    if (isEnabled) {
+        const indicator = document.createElement('div');
+        indicator.id = 'debug-indicator';
+        indicator.style.position = 'fixed';
+        indicator.style.top = '10px';
+        indicator.style.right = '10px';
+        indicator.style.background = 'rgba(0, 255, 255, 0.7)';
+        indicator.style.color = 'black';
+        indicator.style.padding = '5px 10px';
+        indicator.style.borderRadius = '5px';
+        indicator.style.fontFamily = 'monospace';
+        indicator.style.zIndex = '1000';
+        indicator.style.boxShadow = '0 0 10px #00FFFF';
+        indicator.textContent = 'DEBUG MODE';
+        
+        document.body.appendChild(indicator);
+    }
+}
+
+// Add a function to draw debug information on the canvas
+function drawDebugInfo() {
+    if (!window.debugMode) return;
+    
+    // Draw grid lines
+    canvasContext.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+    canvasContext.lineWidth = 0.5;
+    
+    // Vertical grid lines
+    for (let x = 0; x <= map[0].length; x++) {
+        canvasContext.beginPath();
+        canvasContext.moveTo(x * oneBlockSize, 0);
+        canvasContext.lineTo(x * oneBlockSize, canvas.height);
+        canvasContext.stroke();
+    }
+    
+    // Horizontal grid lines
+    for (let y = 0; y <= map.length; y++) {
+        canvasContext.beginPath();
+        canvasContext.moveTo(0, y * oneBlockSize);
+        canvasContext.lineTo(canvas.width, y * oneBlockSize);
+        canvasContext.stroke();
+    }
+    
+    // Draw coordinates on each tile (sparse, every 3 tiles)
+    canvasContext.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    canvasContext.font = `${oneBlockSize / 4}px monospace`;
+    canvasContext.textAlign = 'center';
+    
+    for (let y = 0; y < map.length; y += 3) {
+        for (let x = 0; x < map[0].length; x += 3) {
+            canvasContext.fillText(
+                `${x},${y}`, 
+                x * oneBlockSize + oneBlockSize / 2, 
+                y * oneBlockSize + oneBlockSize / 2
+            );
+        }
+    }
+    
+    // Draw ghost targets
+    ghosts.forEach(ghost => {
+        if (ghost.targetX !== undefined && ghost.targetY !== undefined) {
+            // Get ghost color based on type without using private method
+            let ghostColor;
+            switch(ghost.ghostType) {
+                case 'blinky': ghostColor = '#FF0000'; break; // Red
+                case 'pinky': ghostColor = '#FFC0CB'; break;  // Pink
+                case 'inky': ghostColor = '#00FFFF'; break;   // Cyan
+                case 'clyde': ghostColor = '#FFA500'; break;  // Orange
+                default: ghostColor = '#FFFFFF'; break;       // Default white
+            }
+            
+            const color = ghost.isFrightened ? '#0000FF' : 
+                        ghost.isEaten ? '#FFFFFF' : ghostColor;
+            
+            canvasContext.fillStyle = color;
+            canvasContext.strokeStyle = 'black';
+            canvasContext.lineWidth = 1;
+            
+            // Draw X marker at target
+            const targetX = ghost.targetX * oneBlockSize + oneBlockSize / 2;
+            const targetY = ghost.targetY * oneBlockSize + oneBlockSize / 2;
+            const markerSize = oneBlockSize / 6;
+            
+            canvasContext.beginPath();
+            canvasContext.moveTo(targetX - markerSize, targetY - markerSize);
+            canvasContext.lineTo(targetX + markerSize, targetY + markerSize);
+            canvasContext.moveTo(targetX + markerSize, targetY - markerSize);
+            canvasContext.lineTo(targetX - markerSize, targetY + markerSize);
+            canvasContext.stroke();
+            
+            // Add ghost name label near the target
+            canvasContext.fillText(
+                ghost.ghostType,
+                targetX,
+                targetY - markerSize - 2
+            );
+        }
+    });
+}
 
 let gameLoop = () =>{
     // Only update game logic if playing
@@ -211,21 +396,28 @@ let gameLoop = () =>{
 }
 
 let update = () =>{
-    //todo: Update Method
+    // Update Method
     pacman.update(map);
+    
+    // Check for power pellet activation
+    if (pacman.powerPelletJustActivated) {
+        // Set all ghosts to frightened mode
+        ghosts.forEach(ghost => {
+            ghost.setFrightened(pacman.powerPelletDuration);
+        });
+        pacman.powerPelletJustActivated = false; // Reset the flag
+    }
+    
+    // Update each ghost
+    ghosts.forEach(ghost => ghost.update(map, pacman));
     
     // Update background particles
     updateParticles();
 
-    // Placeholder for losing a life (e.g., collision with ghost)
-    // if (pacmanHitGhost()) { 
-    //    loseLife();
-    // }
-
-     // Check for winning condition (e.g., all pellets eaten)
-     // if (areAllPelletsEaten()) {
-     //    winLevel(); // TODO: Implement win condition
-     // }
+    // Check for winning condition (e.g., all pellets eaten)
+    if (areAllPelletsEaten()) {
+       winLevel(); // Implement win condition
+    }
 }
 
 let draw = () =>{
@@ -242,10 +434,19 @@ let draw = () =>{
         drawWalls();
         // Draw dynamic elements
         drawPellets();
+        
+        // Draw debug info before entities if debug mode is enabled
+        if (window.debugMode) {
+            drawDebugInfo();
+        }
+        
         pacman.draw(canvasContext);
         drawScore();
-        drawLives(); // Add function to draw lives
-        // todo: Draw ghosts
+        drawLives();
+        // Draw ghosts
+        ghosts.forEach(ghost => ghost.draw(canvasContext, ghostSpritesheet));
+        // Draw floating texts
+        drawFloatingTexts();
     } else if (gameState === STATE_GAMEOVER) {
         drawGameOverScreen();
     }
@@ -477,29 +678,30 @@ function startGame() {
 }
 
 function loseLife() {
-     if (gameState !== STATE_PLAYING) return; // Only lose life if playing
+    if (gameState !== STATE_PLAYING) return; // Only lose life if playing
 
-     lives--;
-     console.log("Lost a life! Lives remaining:", lives);
-     // TODO: Add animation/sound for losing life
+    lives--;
+    console.log("Lost a life! Lives remaining:", lives);
+    
+    // Reset positions
+    pacman.resetPosition(pacmanStartX, pacmanStartY);
+    pacman.direction = null; // Ensure Pac-Man stops
 
-     if (lives <= 0) {
-         gameState = STATE_GAMEOVER;
-         console.log("Game Over!");
-         // TODO: Play game over sound
-     } else {
-         // Reset Pac-Man position for the current level (optional)
-         pacman.resetPosition(pacmanStartX, pacmanStartY); 
-         // Optional: Reset ghost positions here too
-         // Brief pause or 'Ready?' state before continuing?
-         // For simplicity now, just reset position
-     }
+    // Reset all ghosts to their starting positions
+    initializeGhosts();
+
+    if (lives <= 0) {
+        gameState = STATE_GAMEOVER;
+        console.log("Game Over!");
+        // TODO: Play game over sound
+    }
 }
 
 function resetGame() {
     console.log("Resetting game...");
     lives = 3;
-    // Reset score in PacMan instance
+    
+    // Reset score and position in PacMan instance
     if (pacman) {
         pacman.resetScore();
         pacman.resetPosition(pacmanStartX, pacmanStartY);
@@ -507,10 +709,9 @@ function resetGame() {
         pacman.direction = 'right'; // Or 'left' if preferred
         pacman.requestedDirection = 'right'; // Also set requested to avoid initial stall
     }
-    // TODO: Reset the map (pellets) - More complex, requires storing original map
-    // For now, pellets stay eaten on restart
-
-    // TODO: Reset Ghosts
+    
+    // Reset Ghosts
+    initializeGhosts();
 }
 
 // --- Gamepad Input Handling ---
@@ -699,3 +900,74 @@ canvas.addEventListener('touchend', (event) => {
 // Ensure pacman.js is included before game.js in index.html
 // <script src="pacman.js"></script>
 // <script src="game.js"></script>
+
+// Add a function to check if all pellets are eaten (after drawScore or similar function)
+function areAllPelletsEaten() {
+    for (let row = 0; row < map.length; row++) {
+        for (let col = 0; col < map[row].length; col++) {
+            if (map[row][col] === TILE_PELLET || map[row][col] === TILE_POWER_PELLET) {
+                return false; // Found at least one pellet
+            }
+        }
+    }
+    return true; // No pellets found, all eaten
+}
+
+// Implement win condition function
+function winLevel() {
+    console.log("Level complete!");
+    // For now, just reset game to play again
+    resetGame();
+    gameState = STATE_READY;
+}
+
+// Add floating text function
+function drawFloatingTexts() {
+    if (!window.floatingTexts) {
+        window.floatingTexts = [];
+        return;
+    }
+    
+    const currentTime = Date.now();
+    // Remove expired texts and draw remaining ones
+    for (let i = window.floatingTexts.length - 1; i >= 0; i--) {
+        const text = window.floatingTexts[i];
+        const elapsed = currentTime - text.createdAt;
+        
+        if (elapsed > text.duration) {
+            window.floatingTexts.splice(i, 1);
+            continue;
+        }
+        
+        // Calculate position and opacity
+        const progress = elapsed / text.duration;
+        const y = text.y - progress * oneBlockSize;
+        const opacity = 1 - progress;
+        
+        canvasContext.globalAlpha = opacity;
+        canvasContext.fillStyle = text.color;
+        canvasContext.font = `bold ${oneBlockSize * 0.8}px 'Courier New', Courier, monospace`;
+        canvasContext.textAlign = 'center';
+        canvasContext.fillText(text.text, text.x + oneBlockSize/2, y + oneBlockSize/2);
+    }
+    
+    canvasContext.globalAlpha = 1.0;
+}
+
+// Function to show score or other floating text
+function showFloatingText(text, x, y, color = '#FFFFFF', duration = 1000) {
+    const floatingText = {
+        text: text,
+        x: x,
+        y: y,
+        color: color,
+        createdAt: Date.now(),
+        duration: duration
+    };
+    
+    if (!window.floatingTexts) {
+        window.floatingTexts = [];
+    }
+    
+    window.floatingTexts.push(floatingText);
+}

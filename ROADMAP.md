@@ -15,12 +15,14 @@ This document outlines the development plan for PacManJS.
 
 ## Phase 2: Ghost AI & Interaction
 
-- [ ] Implement Ghost entities (Blinky, Pinky, Inky, Clyde)
-- [ ] Implement basic random Ghost movement
-- [ ] Implement Ghost AI (Chase, Scatter, Frightened modes)
-- [ ] Implement Ghost collision detection (with walls and Pac-Man)
-- [ ] Implement Pac-Man eating Ghosts during Frightened mode
-- [ ] Implement Ghosts returning to the ghost house after being eaten
+- [x] Implement Ghost entities (Blinky, Pinky, Inky, Clyde)
+- [x] Implement basic random Ghost movement (superseded by AI)
+- [x] Implement Ghost AI (Chase, Scatter, Frightened modes)
+  - [x] Unique targeting logic for each ghost
+  - [x] A* pathfinding for navigation
+- [x] Implement Ghost collision detection (with walls and Pac-Man)
+- [x] Implement Pac-Man eating Ghosts during Frightened mode
+- [x] Implement Ghosts returning to the ghost house after being eaten
 
 ## Phase 3: Game Flow & UI
 
@@ -37,8 +39,8 @@ This document outlines the development plan for PacManJS.
 - [ ] Add sound effects (eating pellets, eating ghosts, death, intro)
 - [ ] Add background music
 - [x] Improve graphics and animations (sprites, smooth movement)
-- [ ] Refine Ghost AI for more authentic behavior
-- [ ] Optimize performance
+- [x] Refine Ghost AI for more authentic behavior (Implemented A*)
+- [ ] Optimize performance (A* path caching implemented)
 - [x] Added multi-platform controls (Keyboard, Touch, Gamepad)
 - [x] Centered canvas & basic responsiveness
 
